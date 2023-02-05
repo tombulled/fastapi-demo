@@ -278,3 +278,9 @@ def users_delete(id: int) -> Response:
 $ poetry new client
 Created package client in client
 ```
+
+## Links
+* FastAPI - Docs: https://fastapi.tiangolo.com/
+* FastAPI - Repo: https://github.com/tiangolo/fastapi
+* Uvicorn - Docs: https://www.uvicorn.org/
+* Uvicorn - Repo: https://github.com/encode/uvicorn
