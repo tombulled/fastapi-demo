@@ -178,25 +178,31 @@ server: uvicorn
 **api/__init__.py**
 ```python
 from http import HTTPStatus
-from typing import Final, Mapping
+from typing import Final, Mapping, Sequence
 
 from fastapi import FastAPI, HTTPException
 
 from .models import User
 
-app: FastAPI = FastAPI()
-
 USERS: Final[Mapping[int, User]] = {
     1: User(id=1, name="Sam", occupation="Dentist"),
 }
 
+app: FastAPI = FastAPI()
 
-@app.get("/user/{id}")
-def foo(id: int) -> User:
+
+@app.get("/users")
+def users_list() -> Sequence[User]:
+    return tuple(USERS.values())
+
+
+@app.get("/users/{id}")
+def users_get(id: int) -> User:
     if id not in USERS:
         raise HTTPException(HTTPStatus.NOT_FOUND)
 
     return USERS[id]
+
 ```
 
 **api/models.py**
@@ -209,6 +215,60 @@ class User:
     id: int
     name: str
     occupation: str
+```
+
+### 13. Improve the Implementation (Delete)
+```python
+from http import HTTPStatus
+from typing import Final, MutableMapping, Sequence
+
+from fastapi import FastAPI, HTTPException, Response
+
+from .models import User
+
+USERS: Final[MutableMapping[int, User]] = {
+    1: User(id=1, name="Sam", occupation="Dentist"),
+}
+
+app: FastAPI = FastAPI()
+
+
+def assert_user_exists(id: int) -> None:
+    if id not in USERS:
+        raise HTTPException(HTTPStatus.NOT_FOUND)
+
+
+@app.get("/users")
+def users_list() -> Sequence[User]:
+    return tuple(USERS.values())
+
+
+@app.get("/users/{id}")
+def users_get(id: int) -> User:
+    assert_user_exists(id)
+
+    return USERS[id]
+
+
+@app.delete("/users/{id}")
+def users_delete(id: int) -> Response:
+    assert_user_exists(id)
+
+    del USERS[id]
+
+    # "If a DELETE method is successfully applied, the origin server SHOULD send
+    #   * a 202 (Accepted) status code if the action will likely succeed but has
+    #     not yet been enacted,
+    #   * a 204 (No Content) status code if the action has been enacted and no
+    #     further information is to be supplied, or
+    #   * a 200 (OK) status code if the action has been enacted and the response
+    #     message includes a representation describing the status.
+    # (RFC 9110: HTTP Semantics, Section 9.3.5)
+    return Response(status_code=HTTPStatus.NO_CONTENT)
+```
+
+### 14. Improve the Implementation (Create)
+```python
 
 ```
 
