@@ -1,7 +1,7 @@
-# fastapi-httpx-demo
-FastAPI x HTTPX Demo
+# fastapi-demo
+FastAPI Demo
 
-## API Server
+## Steps
 ### 1. Initialise Project
 ```console
 user@host:/$ poetry new api
@@ -265,18 +265,6 @@ def users_delete(id: int) -> Response:
     #     message includes a representation describing the status.
     # (RFC 9110: HTTP Semantics, Section 9.3.5)
     return Response(status_code=HTTPStatus.NO_CONTENT)
-```
-
-### 14. Improve the Implementation (Create)
-```python
-
-```
-
-## API Client
-### 1. Initialise Projects
-```console
-$ poetry new client
-Created package client in client
 ```
 
 ## Links
