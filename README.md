@@ -151,11 +151,13 @@ collected 0 items
 
 ### 10. Start the Server
 ```console
-user@host:/api#api-yFdlCiQC-py3.8$ uvicorn api:app
-INFO:     Started server process [170685]
+user@host:/api#api-yFdlCiQC-py3.8$ uvicorn api:app --reload
+INFO:     Will watch for changes in these directories: ['/api']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [172713] using StatReload
+INFO:     Started server process [172716]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 ```
 
 ### 11. Hit the Server
@@ -172,9 +174,42 @@ server: uvicorn
 }
 ```
 
-### 12. Improve the Implementation
-```console
-# TODO
+### 12. Improve the Implementation (Read)
+**api/__init__.py**
+```python
+from http import HTTPStatus
+from typing import Final, Mapping
+
+from fastapi import FastAPI, HTTPException
+
+from .models import User
+
+app: FastAPI = FastAPI()
+
+USERS: Final[Mapping[int, User]] = {
+    1: User(id=1, name="Sam", occupation="Dentist"),
+}
+
+
+@app.get("/user/{id}")
+def foo(id: int) -> User:
+    if id not in USERS:
+        raise HTTPException(HTTPStatus.NOT_FOUND)
+
+    return USERS[id]
+```
+
+**api/models.py**
+```python
+from dataclasses import dataclass
+
+
+@dataclass
+class User:
+    id: int
+    name: str
+    occupation: str
+
 ```
 
 ## API Client
